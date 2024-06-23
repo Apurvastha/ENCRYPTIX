@@ -18,6 +18,10 @@ class ContactBook(tk.Tk):
 
         contacts_frame = tk.Frame(self)
         contacts_frame.pack(pady=10)
+        # self.contacts_tree.column("Name", width=100)
+        # self.contacts_tree.column("Phone", width=100)
+        # self.contacts_tree.column("Email", width=150)
+        # self.contacts_tree.column("Address", width=200)
 
         # Create input fields
         name_label = tk.Label(input_frame, text="Name:")
@@ -50,6 +54,17 @@ class ContactBook(tk.Tk):
         remove_button = tk.Button(input_frame, text="Remove", command=self.remove_contact)
         remove_button.grid(row=2, column=2, padx=5, pady=5)
 
+        # Create search bar
+        search_frame = tk.Frame(self)
+        search_frame.pack(pady=5)
+
+        search_label = tk.Label(search_frame, text="Search:")
+        search_label.pack(side=tk.LEFT)
+
+        self.search_entry = tk.Entry(search_frame, width=30)
+        self.search_entry.pack(side=tk.LEFT, padx=5)
+        self.search_entry.bind("<KeyRelease>", self.search_contacts)
+
         # Create contacts list
         contacts_label = tk.Label(contacts_frame, text="Contacts:")
         contacts_label.pack(side=tk.TOP, pady=5)
@@ -64,16 +79,7 @@ class ContactBook(tk.Tk):
 
         self.contacts_tree.bind("<ButtonRelease-1>", self.select_contact)
 
-        # Create search bar
-        search_frame = tk.Frame(contacts_frame)
-        search_frame.pack(side=tk.TOP, pady=5)
-
-        search_label = tk.Label(search_frame, text="Search:")
-        search_label.pack(side=tk.LEFT)
-
-        self.search_entry = tk.Entry(search_frame)
-        self.search_entry.pack(side=tk.LEFT, padx=5)
-        self.search_entry.bind("<KeyRelease>", self.search_contacts)
+        
 
     def add_contact(self):
         name = self.name_entry.get()
@@ -82,7 +88,7 @@ class ContactBook(tk.Tk):
         address = self.address_entry.get()
 
         if name and phone:
-            contacts[name] = {"Phone": phone, "Email": email, "Address": address}
+            contacts[name] = {"Name": name,"Phone": phone, "Email": email, "Address": address}
             self.clear_entries()
             self.update_contacts_tree()
             messagebox.showinfo("Success", "Contact added successfully!")
@@ -147,14 +153,14 @@ class ContactBook(tk.Tk):
     def update_contacts_tree(self):
         self.contacts_tree.delete(*self.contacts_tree.get_children())
         for name, contact in contacts.items():
-            self.contacts_tree.insert("", tk.END, text=name, values=(contact["Phone"], contact.get("Email", ""), contact.get("Address", "")))
+            self.contacts_tree.insert("", tk.END, text=name, values=(name, contact["Phone"], contact.get("Email", ""), contact.get("Address", "")))
 
     def search_contacts(self, event):
         search_term = self.search_entry.get().lower()
         self.contacts_tree.delete(*self.contacts_tree.get_children())
         for name, contact in contacts.items():
             if search_term in name.lower() or search_term in contact["Phone"].lower() or search_term in contact.get("Email", "").lower() or search_term in contact.get("Address", "").lower():
-                self.contacts_tree.insert("", tk.END, text=name, values=(contact["Phone"], contact.get("Email", ""), contact.get("Address", "")))
+                self.contacts_tree.insert("", tk.END, text=name, values=(name, contact["Phone"], contact.get("Email", ""), contact.get("Address", "")))
 
 if __name__ == "__main__":
     app = ContactBook()
